@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/r-2.2.1/datatables.min.css" />
+    <title>DataTables.js のレスポンシブ機能をハックしてフリースペースとして使う方法</title>
+    <style>
+        .dtr-details,
+        .childtable {
+            width: 100%
+        }
+
+        .dtr-title {
+            display: none !important;
+        }
+
+        .right {
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <table id="dataTable" class="table-sm table-bordered" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.16/r-2.2.1/datatables.min.js"></script>
+    <script type="text/javascript">
+
+
+        var myTable;
+        $(document).ready(function () {
+
+            // Datatableの設定
+            myTable = $("#dataTable").DataTable({
+                columns: [{
+                    title: "id",
+                    data: "id",
+                    width: "20",
+                }, {
+                    data: "cashier",
+                    title: "レジ担当",
+                }, {
+                    data: "time",
+                    title: "時間",
+                }, {
+                    data: "summary",
+                    class: "right",
+                    title: "合計",
+                    width: "40",
+                },
+                {
+                    data: "items",
+                    className: "none", //noneを設定すると初期表示で明細行に表示される
+                    render: function (items) {
+
+                        rows = ""
+                        items.forEach(
+                            function (item, index) {
+                                rows += "<tr><td>" + item.item + '</dt><td class="right">' + item.price + "</td></tr>"
+                            }
+                        )
+                        return '<table class="childtable table-striped table-bordered"><tbody>' + rows + '</tbody></table>'
+                    }
+                }],
+                // レスポンシブ設定
+                responsive: {
+                    // どのデータを明細に表示させるかを指定
+                    details: {
+                        // 最初から開いた状態にする
+                        display: $.fn.dataTable.Responsive.display.childRowImmediate,
+
+                        // 開閉機能を無効にする。
+                        type: 'column', // 開閉マークを消す
+                        target: '', // 列をタッチしても無反応にする
+                    }
+                },
+                // データソースの設定
+                ajax: {
+                    url: 'data.json'
+                },
+            });
+        })
+    </script>
+</body>
+
+</html>
